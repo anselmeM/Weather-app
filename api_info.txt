@@ -1,0 +1,7 @@
+Visual Crossing Weather API
+
+Base URL: https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/
+
+Example request for Toronto: https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/toronto?unitGroup=us&key=YOUR_API_KEY&contentType=json
+
+You will need an API key.
