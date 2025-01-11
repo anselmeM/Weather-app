@@ -20,7 +20,8 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
-    margin-bottom: 20px; /* Adds some space between the title and the card */
+    margin-top: 50px;
+    /* margin-bottom: 20px; Adds some space between the title and the card */
 }
 
 .title h1 {
