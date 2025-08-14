@@ -2,6 +2,10 @@
 
 A simple web application that displays the current weather conditions for a searched city using the Visual Crossing Weather API.
 
+## Live Demo
+
+You can view a live demo of the application here: [Weather App](https://anselmem.github.io/Weather-app/)
+
 ## Description
 
 This project allows users to enter a city name and retrieve real-time weather information, including temperature, weather condition, humidity, and wind speed. It features a clean, responsive user interface that adapts to different screen sizes.
