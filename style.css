@@ -10,9 +10,10 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center; /* Centering the content horizontally */
-    justify-content: center; /* Centering the content vertically */
-    height: 100vh;
+    min-height: 100vh;
     text-align: center; /* Centering text */
+    padding: 2rem 1rem;
+    box-sizing: border-box;
 }
 
 .title {
@@ -36,13 +37,11 @@ body {
     color: #fff;
     margin: 20px 0; /* Added margin top and bottom */
     border-radius: 20px;
-    padding: 40px 25px 40px 35px; /* Adjusted right padding for scrollbar */
+    padding: 40px 35px;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-height: 90vh;
-    overflow-y: auto;
 }
 
 /* Styling for the Search Box */
