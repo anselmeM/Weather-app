@@ -5,18 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/css/weather-icons.min.css">
 </head>
 <body>
-    <div class="title">
+    <header class="title">
         <h1>Weather App</h1>
-    </div>
-    <div class="card">
-        <div class="search">
-            <input type="text" id="cityInput" placeholder="Enter city name">
-            <button id="getWeather" title="Get Weather"><img src="img/5094671_find_glass_search_zoom_icon.png" alt="Search"></button>
+    </header>
+    <main class="card">
+        <form id="searchForm" class="search" role="search">
+            <label for="cityInput" class="visually-hidden">City Name</label>
+            <input type="text" id="cityInput" placeholder="Enter city name" list="searchHistory" aria-label="City Name">
+            <button type="submit" id="getWeather" title="Get Weather" aria-label="Search for weather by city name">
+                <img src="img/5094671_find_glass_search_zoom_icon.png" alt="Search">
+            </button>
+            <button id="geolocationButton" title="Use my location" aria-label="Get weather for my current location">📍</button>
+            <button type="button" id="clearButton" title="Clear search and results" aria-label="Clear search and results">❌</button>
+        </form>
+        <datalist id="searchHistory"></datalist>
+        <div class="unit-toggle">
+            <button id="unitToggle" aria-label="Toggle temperature unit between Fahrenheit and Celsius">°F</button>
         </div>
-        <img src="img/weather-app.png" class="weather-icon" id="weatherIcon" alt="Weather Icon">
-        <div id="weatherData" style="display: none;">
+        <i class="weather-icon" id="weatherIcon" aria-hidden="true"></i>
+        <div id="weatherData" aria-live="polite">
             <div class="weather">
                 <h1 class="temp" id="temperature"></h1>
                 <h2 class="city" id="cityName"></h2>
@@ -37,11 +47,35 @@
                     </div>
                 </div>
             </div>
+            <div id="hourlyForecastContainer" class="hourly-forecast-container"></div>
             <p id="condition"></p>
         </div>
-        <p id="error"></p>
-        <div id="loading">Loading...</div>
-    </div>
+        <div id="forecastContainer" class="forecast-container" aria-live="polite"></div>
+        <div id="skeletonLoader">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text skeleton-text-small"></div>
+            <div class="skeleton-details">
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+            </div>
+            <div class="skeleton-hourly">
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+            </div>
+            <div class="skeleton-forecast">
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+            </div>
+        </div>
+        <p id="error" aria-live="assertive"></p>
+    </main>
     <script src="script.js"></script>
 </body>
 </html>
