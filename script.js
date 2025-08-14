@@ -5,6 +5,7 @@ let currentUnit = 'us'; // 'us' for Fahrenheit, 'metric' for Celsius
 // DOM element references
 const cityInput = document.getElementById('cityInput');
 const getWeatherButton = document.getElementById('getWeather');
+const geolocationButton = document.getElementById('geolocationButton');
 const loadingIndicator = document.getElementById('loading');
 const weatherDataDisplay = document.getElementById('weatherData');
 const errorDisplay = document.getElementById('error');
@@ -110,20 +111,24 @@ function handleFetchError(error) {
   weatherDataDisplay.style.display = 'none';
 }
 
+let lastLocation = ''; // To store the last searched location
+
 // Main function to get weather
-async function getWeather() {
-  const city = cityInput.value;
-  if (!city) {
-    errorDisplay.textContent = 'Please enter a city name.';
+async function getWeather(location = null) {
+  const locationQuery = location || cityInput.value;
+  if (!locationQuery) {
+    errorDisplay.textContent = 'Please enter a city name or use geolocation.';
     return;
   }
+
+  lastLocation = locationQuery; // Save the location for unit toggling
 
   loadingIndicator.style.display = 'block';
   weatherDataDisplay.style.display = 'none';
   errorDisplay.textContent = '';
 
   try {
-    const data = await fetchWeatherData(city, apiKey);
+    const data = await fetchWeatherData(locationQuery, apiKey);
     updateWeatherUI(data);
   } catch (error) {
     handleFetchError(error);
@@ -136,12 +141,42 @@ function toggleUnit() {
   unitToggleButton.textContent = currentUnit === 'us' ? '°F' : '°C';
   // If a city's weather is already displayed, fetch it again with the new unit
   if (weatherDataDisplay.style.display === 'block') {
-    getWeather();
+    getWeather(lastLocation);
+  }
+}
+
+// Gets weather for the user's current location
+function getWeatherForCurrentLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        getWeather(`${latitude},${longitude}`);
+      },
+      (error) => {
+        let message = 'Failed to get location.';
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            message = 'Geolocation permission denied.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            message = 'Location information is unavailable.';
+            break;
+          case error.TIMEOUT:
+            message = 'Location request timed out.';
+            break;
+        }
+        errorDisplay.textContent = message;
+      }
+    );
+  } else {
+    errorDisplay.textContent = 'Geolocation is not supported by this browser.';
   }
 }
 
 // Event listeners
-getWeatherButton.addEventListener('click', getWeather);
+getWeatherButton.addEventListener('click', () => getWeather());
+geolocationButton.addEventListener('click', getWeatherForCurrentLocation);
 cityInput.addEventListener('keyup', (event) => {
   if (event.key === 'Enter') {
     getWeather();

@@ -79,6 +79,12 @@ body {
     width: 30px;
 }
 
+#geolocationButton {
+    font-size: 24px;
+    padding: 0;
+    margin-left: 10px;
+}
+
 .unit-toggle {
     width: 100%;
     text-align: right;
