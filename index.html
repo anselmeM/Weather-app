@@ -1,81 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Space+Grotesk%3Awght%40400%3B500%3B700"
+    />
+
     <title>Weather App</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/css/weather-icons.min.css">
-</head>
-<body>
-    <header class="title">
-        <h1>Weather App</h1>
-    </header>
-    <main class="card">
-        <form id="searchForm" class="search" role="search">
-            <label for="cityInput" class="visually-hidden">City Name</label>
-            <input type="text" id="cityInput" placeholder="Enter city name" list="searchHistory" aria-label="City Name">
-            <button type="submit" id="getWeather" title="Get Weather" aria-label="Search for weather by city name">
-                <img src="img/5094671_find_glass_search_zoom_icon.png" alt="Search">
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body>
+    <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: "Space Grotesk", "Noto Sans", sans-serif;'>
+      <div class="layout-container flex h-full grow flex-col">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] px-10 py-3">
+          <div class="flex items-center gap-4 text-[#111418]">
+            <div class="size-4">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+            </div>
+            <h2 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em]">WeatherWise</h2>
+          </div>
+          <div class="flex flex-1 justify-end gap-8">
+            <form id="search-form" class="flex flex-col min-w-40 !h-10 max-w-64">
+              <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                <div
+                  class="text-[#637488] flex border-none bg-[#f0f2f4] items-center justify-center pl-4 rounded-l-lg border-r-0"
+                  data-icon="MagnifyingGlass"
+                  data-size="24px"
+                  data-weight="regular"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
+                    ></path>
+                  </svg>
+                </div>
+                <input
+                  id="search-input"
+                  placeholder="Search for a city"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f4] focus:border-none h-full placeholder:text-[#637488] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                  value=""
+                />
+              </div>
+            </form>
+            <button
+              class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#f0f2f4] text-[#111418] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
+            >
+              <div class="text-[#111418]" data-icon="Gear" data-size="20px" data-weight="regular">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                  <path
+                    d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"
+                  ></path>
+                </svg>
+              </div>
             </button>
-            <button id="geolocationButton" title="Use my location" aria-label="Get weather for my current location">📍</button>
-            <button type="button" id="clearButton" title="Clear search and results" aria-label="Clear search and results">❌</button>
-        </form>
-        <datalist id="searchHistory"></datalist>
-        <div class="unit-toggle">
-            <button id="unitToggle" aria-label="Toggle temperature unit between Fahrenheit and Celsius">°F</button>
+            <div
+              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAAOEXkyp5-_wJFDQK8tEPCa7FTPFsJbIl5bo6B7Qdd8FtfJKa5EjWJ09aH-YH0vzBKqMSqVt4pKT9Lm_LFMSYw88iIge8q0QS6jAaGRd7QBmYlutYqcQuAE9npACw7vbviL2TkYVyAmjI-N2-cRBhsnvhazo3AjFS0MUROTGPrRtp0tMfXMP6FhN02nMF6f71a3W-ZGa8IkpuUQIlzIrPvWWwTxIrbRUbpIVG1nzLbgbQtwn5SohhdkVISyyXyJWo-pYDTiqxoeiI");'
+            ></div>
+          </div>
+        </header>
+        <div class="px-40 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <h2 id="city-name" class="text-[#111418] tracking-light text-[28px] font-bold leading-tight px-4 text-left pb-3 pt-5">...</h2>
+            <p id="date-time" class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4">...</p>
+            <div class="flex w-full grow bg-white @container p-4">
+              <div class="w-full gap-1 overflow-hidden bg-white @[480px]:gap-2 aspect-[3/2] rounded-lg flex">
+                <div
+                  id="weather-image"
+                  class="w-full bg-center bg-no-repeat bg-cover aspect-auto rounded-none flex-1"
+                  style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD2yInEvmMmxwpOMQT9EmSVa0nznq-nL6bSEFSZy-SgzGlkrTeamm0tCBERjEhlqgCL1CLmey62j3Cjvzx7bYimqtqsj-IClk_dKYpQYaOfPhfRPDEdklV8_PsD67dwvbdraWVenG2cAO6G1jIxtshctBmRjtuMexCU2aJTg49l1cIZ9tXJ_QMwTZgvfKMW7nVEzE2BisKOt_BSbidPuULNKowuSAHGzpZ5K9UCzAq5oF5U9Ukb434IpEz_UtDml4-KkENl60m0YxE");'
+                ></div>
+              </div>
+            </div>
+            <h1 id="temperature" class="text-[#111418] tracking-light text-[32px] font-bold leading-tight px-4 text-left pb-3 pt-6">...</h1>
+            <p id="feels-like" class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4">...</p>
+            <h3 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Today's Details</h3>
+            <div class="p-4 grid grid-cols-2">
+              <div class="flex flex-col gap-1 border-t border-solid border-t-[#dce0e5] py-4 pr-2">
+                <p class="text-[#637488] text-sm font-normal leading-normal">Humidity</p>
+                <p id="humidity" class="text-[#111418] text-sm font-normal leading-normal">...</p>
+              </div>
+              <div class="flex flex-col gap-1 border-t border-solid border-t-[#dce0e5] py-4 pl-2">
+                <p class="text-[#637488] text-sm font-normal leading-normal">Wind</p>
+                <p id="wind-speed" class="text-[#111418] text-sm font-normal leading-normal">...</p>
+              </div>
+              <div class="flex flex-col gap-1 border-t border-solid border-t-[#dce0e5] py-4 pr-2">
+                <p class="text-[#637488] text-sm font-normal leading-normal">Pressure</p>
+                <p id="pressure" class="text-[#111418] text-sm font-normal leading-normal">...</p>
+              </div>
+              <div class="flex flex-col gap-1 border-t border-solid border-t-[#dce0e5] py-4 pl-2">
+                <p class="text-[#637488] text-sm font-normal leading-normal">Visibility</p>
+                <p id="visibility" class="text-[#111418] text-sm font-normal leading-normal">...</p>
+              </div>
+            </div>
+            <h3 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Hourly Forecast</h3>
+            <div class="flex overflow-y-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden">
+              <div id="hourly-forecast" class="flex items-stretch p-4 gap-3">
+                <!-- Hourly forecast items will be injected here by JavaScript -->
+              </div>
+            </div>
+          </div>
         </div>
-        <i class="weather-icon" id="weatherIcon" aria-hidden="true"></i>
-        <div id="weatherData" aria-live="polite">
-            <div class="weather">
-                <h1 class="temp" id="temperature"></h1>
-                <h2 class="city" id="cityName"></h2>
-            </div>
-            <div class="details">
-                <div class="col">
-                    <img src="img/—Pngtree—vector humidity icon_3981808.png" alt="Humidity">
-                    <div>
-                        <p class="humidity" id="humidity"></p>
-                        <p>Humidity</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <img src="img/316296_wind_icon.png" alt="Wind Speed">
-                    <div>
-                        <p class="wind" id="windSpeed"></p>
-                        <p>Wind Speed</p>
-                    </div>
-                </div>
-            </div>
-            <div id="hourlyForecastContainer" class="hourly-forecast-container"></div>
-            <p id="condition"></p>
-        </div>
-        <div id="forecastContainer" class="forecast-container" aria-live="polite"></div>
-        <div id="skeletonLoader">
-            <div class="skeleton-icon"></div>
-            <div class="skeleton-text"></div>
-            <div class="skeleton-text skeleton-text-small"></div>
-            <div class="skeleton-details">
-                <div class="skeleton-box"></div>
-                <div class="skeleton-box"></div>
-            </div>
-            <div class="skeleton-hourly">
-                <div class="skeleton-box"></div>
-                <div class="skeleton-box"></div>
-                <div class="skeleton-box"></div>
-                <div class="skeleton-box"></div>
-                <div class="skeleton-box"></div>
-            </div>
-            <div class="skeleton-forecast">
-                <div class="skeleton-box"></div>
-                <div class="skeleton-box"></div>
-                <div class="skeleton-box"></div>
-                <div class="skeleton-box"></div>
-                <div class="skeleton-box"></div>
-            </div>
-        </div>
-        <p id="error" aria-live="assertive"></p>
-    </main>
+      </div>
+    </div>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
