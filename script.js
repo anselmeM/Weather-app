@@ -1,5 +1,6 @@
 // API key for accessing the Visual Crossing Weather API
 const apiKey = 'MSZFX378W9LM39D466F5WW32R';
+let currentUnit = 'us'; // 'us' for Fahrenheit, 'metric' for Celsius
 
 // DOM element references
 const cityInput = document.getElementById('cityInput');
@@ -13,11 +14,12 @@ const condition = document.getElementById('condition');
 const humidity = document.getElementById('humidity');
 const windSpeed = document.getElementById('windSpeed');
 const weatherIcon = document.getElementById('weatherIcon');
+const unitToggleButton = document.getElementById('unitToggle');
 
 // Fetches weather data from the API
 async function fetchWeatherData(city, apiKey) {
   const baseUrl = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/';
-  const url = `${baseUrl}${city}?unitGroup=us&key=${apiKey}&contentType=json`;
+  const url = `${baseUrl}${city}?unitGroup=${currentUnit}&key=${apiKey}&contentType=json`;
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -28,10 +30,12 @@ async function fetchWeatherData(city, apiKey) {
 // Updates the UI with weather data
 function updateWeatherUI(data) {
   cityName.textContent = data.resolvedAddress;
-  temperature.textContent = `${data.currentConditions.temp}°F`;
+  const tempUnit = currentUnit === 'us' ? '°F' : '°C';
+  const speedUnit = currentUnit === 'us' ? 'mph' : 'kph';
+  temperature.textContent = `${data.currentConditions.temp}${tempUnit}`;
   condition.textContent = data.currentConditions.conditions;
   humidity.textContent = `${data.currentConditions.humidity}%`;
-  windSpeed.textContent = `${data.currentConditions.windspeed} mph`;
+  windSpeed.textContent = `${data.currentConditions.windspeed} ${speedUnit}`;
 
   const weatherCondition = data.currentConditions.icon.toLowerCase();
   if (weatherCondition.includes('rain')) {
@@ -83,6 +87,16 @@ async function getWeather() {
   }
 }
 
+// Toggles the unit and re-fetches weather data if a city is displayed
+function toggleUnit() {
+  currentUnit = currentUnit === 'us' ? 'metric' : 'us';
+  unitToggleButton.textContent = currentUnit === 'us' ? '°F' : '°C';
+  // If a city's weather is already displayed, fetch it again with the new unit
+  if (weatherDataDisplay.style.display === 'block') {
+    getWeather();
+  }
+}
+
 // Event listeners
 getWeatherButton.addEventListener('click', getWeather);
 cityInput.addEventListener('keyup', (event) => {
@@ -90,3 +104,4 @@ cityInput.addEventListener('keyup', (event) => {
     getWeather();
   }
 });
+unitToggleButton.addEventListener('click', toggleUnit);

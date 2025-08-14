@@ -79,6 +79,23 @@ body {
     width: 30px;
 }
 
+.unit-toggle {
+    width: 100%;
+    text-align: right;
+    margin-bottom: 10px;
+}
+
+#unitToggle {
+    background: #ebfffc;
+    color: #555;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
 .weather-icon {
     width: 100px;
     margin-top: 30px;
