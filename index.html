@@ -18,13 +18,14 @@
                 <img src="img/5094671_find_glass_search_zoom_icon.png" alt="Search">
             </button>
             <button id="geolocationButton" title="Use my location" aria-label="Get weather for my current location">📍</button>
+            <button type="button" id="clearButton" title="Clear search and results" aria-label="Clear search and results">❌</button>
         </form>
         <datalist id="searchHistory"></datalist>
         <div class="unit-toggle">
             <button id="unitToggle" aria-label="Toggle temperature unit between Fahrenheit and Celsius">°F</button>
         </div>
         <img src="img/weather-app.png" class="weather-icon" id="weatherIcon" alt="Weather Icon">
-        <div id="weatherData" style="display: none;" aria-live="polite">
+        <div id="weatherData" aria-live="polite">
             <div class="weather">
                 <h1 class="temp" id="temperature"></h1>
                 <h2 class="city" id="cityName"></h2>

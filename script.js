@@ -7,6 +7,8 @@ const cityInput = document.getElementById('cityInput');
 const getWeatherButton = document.getElementById('getWeather');
 const geolocationButton = document.getElementById('geolocationButton');
 const searchForm = document.getElementById('searchForm');
+const clearButton = document.getElementById('clearButton');
+const cardElement = document.querySelector('.card');
 const loadingIndicator = document.getElementById('loading');
 const weatherDataDisplay = document.getElementById('weatherData');
 const errorDisplay = document.getElementById('error');
@@ -120,7 +122,7 @@ function updateWeatherUI(data) {
 
   updateForecastUI(data.days);
   loadingIndicator.style.display = 'none';
-  weatherDataDisplay.style.display = 'block';
+  cardElement.classList.add('weather-visible');
   weatherDataDisplay.setAttribute('aria-busy', 'false');
 }
 
@@ -139,7 +141,7 @@ function handleFetchError(error) {
   }
   errorDisplay.textContent = message;
   loadingIndicator.style.display = 'none';
-  weatherDataDisplay.style.display = 'none';
+  cardElement.classList.remove('weather-visible');
   weatherDataDisplay.setAttribute('aria-busy', 'false');
 }
 
@@ -156,7 +158,7 @@ async function getWeather(location = null) {
   lastLocation = locationQuery;
 
   loadingIndicator.style.display = 'block';
-  weatherDataDisplay.style.display = 'none';
+  cardElement.classList.remove('weather-visible');
   weatherDataDisplay.setAttribute('aria-busy', 'true');
   errorDisplay.textContent = '';
 
@@ -209,6 +211,14 @@ function getWeatherForCurrentLocation() {
   }
 }
 
+// Clears the UI and resets the state
+function clearUI() {
+    cityInput.value = '';
+    errorDisplay.textContent = '';
+    lastLocation = '';
+    cardElement.classList.remove('weather-visible');
+}
+
 // Event listeners
 searchForm.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -216,6 +226,7 @@ searchForm.addEventListener('submit', (event) => {
 });
 geolocationButton.addEventListener('click', getWeatherForCurrentLocation);
 unitToggleButton.addEventListener('click', toggleUnit);
+clearButton.addEventListener('click', clearUI);
 
 // Initial Load
 loadSearchHistory();

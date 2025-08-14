@@ -85,6 +85,17 @@ body {
     margin-left: 10px;
 }
 
+#clearButton {
+    font-size: 20px;
+    padding: 0;
+    margin-left: 10px;
+    display: none; /* Hidden by default */
+}
+
+.weather-visible #clearButton {
+    display: inline-block; /* Show when weather is visible */
+}
+
 .unit-toggle {
     width: 100%;
     text-align: right;
@@ -152,6 +163,20 @@ body {
 
 #condition {
     margin-top: 15px;
+}
+
+#weatherData, #forecastContainer {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
+    max-height: 0;
+}
+
+.weather-visible #weatherData,
+.weather-visible #forecastContainer {
+    opacity: 1;
+    visibility: visible;
+    max-height: 1000px; /* Arbitrary large value to allow content to expand */
 }
 
 .visually-hidden {
