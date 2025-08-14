@@ -1,127 +1,54 @@
 // API key for accessing the Visual Crossing Weather API
 const apiKey = 'MSZFX378W9LM39D466F5WW32R';
-const UNIT_PREFERENCE_KEY = 'weatherAppUnitPreference';
-let currentUnit = localStorage.getItem(UNIT_PREFERENCE_KEY) || 'us'; // Load preference or default to 'us'
 
 // DOM element references
-const cityInput = document.getElementById('cityInput');
-const getWeatherButton = document.getElementById('getWeather');
-const geolocationButton = document.getElementById('geolocationButton');
-const searchForm = document.getElementById('searchForm');
-const clearButton = document.getElementById('clearButton');
-const cardElement = document.querySelector('.card');
-const skeletonLoader = document.getElementById('skeletonLoader');
-const weatherDataDisplay = document.getElementById('weatherData');
-const errorDisplay = document.getElementById('error');
-const cityName = document.getElementById('cityName');
+const searchForm = document.getElementById('search-form');
+const searchInput = document.getElementById('search-input');
+const cityName = document.getElementById('city-name');
+const dateTime = document.getElementById('date-time');
+const weatherImage = document.getElementById('weather-image');
 const temperature = document.getElementById('temperature');
-const condition = document.getElementById('condition');
+const feelsLike = document.getElementById('feels-like');
 const humidity = document.getElementById('humidity');
-const windSpeed = document.getElementById('windSpeed');
-const weatherIcon = document.getElementById('weatherIcon');
-const unitToggleButton = document.getElementById('unitToggle');
-const forecastContainer = document.getElementById('forecastContainer');
-const hourlyForecastContainer = document.getElementById('hourlyForecastContainer');
-const searchHistoryDatalist = document.getElementById('searchHistory');
+const windSpeed = document.getElementById('wind-speed');
+const pressure = document.getElementById('pressure');
+const visibility = document.getElementById('visibility');
+const hourlyForecastContainer = document.getElementById('hourly-forecast');
 
-// --- Search History ---
-const SEARCH_HISTORY_KEY = 'weatherAppSearchHistory';
-const MAX_HISTORY_ITEMS = 5;
-
-function updateHistoryDatalist(history) {
-  searchHistoryDatalist.innerHTML = '';
-  history.forEach(city => {
-    const option = document.createElement('option');
-    option.value = city;
-    searchHistoryDatalist.appendChild(option);
-  });
-}
-
-function loadSearchHistory() {
-  const history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || [];
-  updateHistoryDatalist(history);
-}
-
-function saveSearch(city) {
-  let history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || [];
-  history = history.filter(item => item.toLowerCase() !== city.toLowerCase());
-  history.unshift(city);
-  if (history.length > MAX_HISTORY_ITEMS) {
-    history = history.slice(0, MAX_HISTORY_ITEMS);
-  }
-  localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
-  updateHistoryDatalist(history);
-}
-// --- End Search History ---
-
-// --- Icon Mapping ---
-const iconMap = {
-    'snow': 'wi-snow',
-    'snow-showers-day': 'wi-day-snow',
-    'snow-showers-night': 'wi-night-snow',
-    'thunder-rain': 'wi-thunderstorm',
-    'thunder-showers-day': 'wi-day-thunderstorm',
-    'thunder-showers-night': 'wi-night-thunderstorm',
-    'rain': 'wi-rain',
-    'showers-day': 'wi-day-showers',
-    'showers-night': 'wi-night-showers',
-    'fog': 'wi-fog',
-    'wind': 'wi-strong-wind',
-    'cloudy': 'wi-cloudy',
-    'partly-cloudy-day': 'wi-day-cloudy',
-    'partly-cloudy-night': 'wi-night-alt-cloudy',
-    'clear-day': 'wi-day-sunny',
-    'clear-night': 'wi-night-clear',
+// Map weather conditions to background images
+const weatherImages = {
+    'partly-cloudy-day': 'https://images.unsplash.com/photo-1599209248411-5124adbb1da2?q=80&w=2070&auto=format&fit=crop',
+    'partly-cloudy-night': 'https://images.unsplash.com/photo-1509718443690-d8e2fb3474b7?q=80&w=2070&auto=format&fit=crop',
+    'clear-day': 'https://images.unsplash.com/photo-1528353518104-dbd48bee7bc4?q=80&w=2070&auto=format&fit=crop',
+    'clear-night': 'https://images.unsplash.com/photo-1532767153582-b1a0e5145009?q=80&w=1964&auto=format&fit=crop',
+    'cloudy': 'https://images.unsplash.com/photo-1499956827185-0d63ee78a910?q=80&w=1974&auto=format&fit=crop',
+    'rain': 'https://images.unsplash.com/photo-1515694346937-94d85e41e682?q=80&w=1974&auto=format&fit=crop',
+    'snow': 'https://images.unsplash.com/photo-1517299321609-52485ae3c2be?q=80&w=2070&auto=format&fit=crop',
+    'thunder-rain': 'https://images.unsplash.com/photo-1605727226462-581448b45c22?q=80&w=1935&auto=format&fit=crop',
+    'fog': 'https://images.unsplash.com/photo-1487621167335-56c636a65e36?q=80&w=2070&auto=format&fit=crop',
+    'wind': 'https://images.unsplash.com/photo-1561574221-a31a5f596545?q=80&w=2070&auto=format&fit=crop',
+    'default': 'https://images.unsplash.com/photo-1592210454359-9043f067919b?q=80&w=2070&auto=format&fit=crop',
 };
-
-function getIconClass(iconName) {
-    return `wi ${iconMap[iconName] || 'wi-na'}`; // Return 'wi-na' (not available) as a fallback
-}
-// --- End Icon Mapping ---
 
 // Fetches weather data from the API
 async function fetchWeatherData(city, apiKey) {
   const baseUrl = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/';
-  const url = `${baseUrl}${city}?unitGroup=${currentUnit}&key=${apiKey}&contentType=json`;
+  // Using metric units as the new design seems to use them (C, km/h)
+  const url = `${baseUrl}${city}?unitGroup=metric&key=${apiKey}&contentType=json`;
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    let message = `HTTP error! status: ${response.status}`;
+    if (response.status === 400) {
+        const text = await response.text();
+        if (text.includes("Provide an API Key")) {
+            message = "Invalid API Key. Please check the key in script.js.";
+        } else {
+            message = "Bad request. Please enter a valid city name.";
+        }
+    }
+    throw new Error(message);
   }
   return await response.json();
-}
-
-// Updates the UI with forecast data
-function updateForecastUI(days) {
-  forecastContainer.innerHTML = ''; // Clear previous forecast
-  const forecastDays = days.slice(1, 6);
-
-  forecastDays.forEach(day => {
-    const dayDiv = document.createElement('div');
-    dayDiv.className = 'forecast-day';
-
-    const date = new Date(day.datetime);
-    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
-
-    const icon = document.createElement('i');
-    icon.className = getIconClass(day.icon);
-    icon.setAttribute('aria-hidden', 'true');
-
-    const tempMax = document.createElement('p');
-    const tempMin = document.createElement('p');
-    const tempUnit = currentUnit === 'us' ? '°F' : '°C';
-    tempMax.textContent = `Max: ${day.tempmax}${tempUnit}`;
-    tempMin.textContent = `Min: ${day.tempmin}${tempUnit}`;
-
-    const dayLabel = document.createElement('p');
-    dayLabel.textContent = dayOfWeek;
-
-    dayDiv.appendChild(dayLabel);
-    dayDiv.appendChild(icon);
-    dayDiv.appendChild(tempMax);
-    dayDiv.appendChild(tempMin);
-
-    forecastContainer.appendChild(dayDiv);
-  });
 }
 
 // Updates the UI with hourly forecast data
@@ -138,155 +65,72 @@ function updateHourlyForecastUI(hours) {
 
     upcomingHours.forEach(hour => {
         const hourDiv = document.createElement('div');
-        hourDiv.className = 'hourly-item';
+        hourDiv.className = 'flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40';
 
-        const time = document.createElement('p');
-        const hourTime = parseInt(hour.datetime.split(':')[0], 10);
-        time.textContent = new Date(0, 0, 0, hourTime).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+        const time = new Date(0, 0, 0, parseInt(hour.datetime.split(':')[0], 10)).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+        const temp = `${Math.round(hour.temp)}°C`;
+        const iconName = hour.icon;
+        const imageUrl = weatherImages[iconName] || weatherImages['default'];
 
-        const icon = document.createElement('i');
-        icon.className = getIconClass(hour.icon);
-        icon.setAttribute('aria-hidden', 'true');
-
-        const temp = document.createElement('p');
-        const tempUnit = currentUnit === 'us' ? '°F' : '°C';
-        temp.textContent = `${hour.temp}${tempUnit}`;
-
-        hourDiv.appendChild(time);
-        hourDiv.appendChild(icon);
-        hourDiv.appendChild(temp);
+        hourDiv.innerHTML = `
+            <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg flex flex-col" style="background-image: url('${imageUrl}');"></div>
+            <div>
+                <p class="text-[#111418] text-base font-medium leading-normal">${time}</p>
+                <p class="text-[#637488] text-sm font-normal leading-normal">${temp}</p>
+            </div>
+        `;
         hourlyForecastContainer.appendChild(hourDiv);
     });
 }
 
-// Updates the UI with weather data
+// Updates the main weather UI
 function updateWeatherUI(data) {
+  // City and date
   cityName.textContent = data.resolvedAddress;
-  const tempUnit = currentUnit === 'us' ? '°F' : '°C';
-  const speedUnit = currentUnit === 'us' ? 'mph' : 'kph';
-  temperature.textContent = `${data.currentConditions.temp}${tempUnit}`;
-  condition.textContent = data.currentConditions.conditions;
-  humidity.textContent = `${data.currentConditions.humidity}%`;
-  windSpeed.textContent = `${data.currentConditions.windspeed} ${speedUnit}`;
+  const now = new Date();
+  dateTime.textContent = now.toLocaleDateString('en-US', { weekday: 'long', hour: 'numeric', minute: 'numeric', hour12: true });
 
-  weatherIcon.className = `weather-icon ${getIconClass(data.currentConditions.icon)}`;
-  weatherIcon.setAttribute('aria-label', data.currentConditions.conditions);
+  // Main weather display
+  const currentConditions = data.currentConditions;
+  temperature.textContent = `${Math.round(currentConditions.temp)}°C`;
+  feelsLike.textContent = `Feels like ${Math.round(currentConditions.feelslike)}°C`;
 
+  // Background image
+  const iconName = currentConditions.icon;
+  weatherImage.style.backgroundImage = `url('${weatherImages[iconName] || weatherImages['default']}')`;
+
+  // Details
+  humidity.textContent = `${currentConditions.humidity}%`;
+  windSpeed.textContent = `${currentConditions.windspeed} km/h`;
+  pressure.textContent = `${currentConditions.pressure} hPa`;
+  visibility.textContent = `${currentConditions.visibility} km`;
+
+  // Hourly forecast
   updateHourlyForecastUI(data.days[0].hours);
-  updateForecastUI(data.days);
-  cardElement.classList.remove('loading');
-  cardElement.classList.add('weather-visible');
-  weatherDataDisplay.setAttribute('aria-busy', 'false');
 }
-
-// Handles errors during the fetch process
-function handleFetchError(error) {
-  console.error('Error fetching weather data:', error);
-  let message = 'Failed to fetch weather data.';
-  if (error.message.includes('400')) {
-    message = 'Bad request. Please check the city name.';
-  } else if (error.message.includes('401')) {
-    message = 'Unauthorized. Invalid API key.';
-  } else if (error.message.includes('404')) {
-    message = 'City not found.';
-  } else if (error.message.includes('500')) {
-    message = 'Server error while fetching weather data.';
-  }
-  errorDisplay.textContent = message;
-  cardElement.classList.remove('loading');
-  weatherDataDisplay.setAttribute('aria-busy', 'false');
-}
-
-let lastLocation = '';
 
 // Main function to get weather
-async function getWeather(location = null) {
-  const locationQuery = location || cityInput.value;
-  if (!locationQuery) {
-    errorDisplay.textContent = 'Please enter a city name or use geolocation.';
+async function getWeather(city) {
+  if (!city) {
+    alert('Please enter a city name.');
     return;
   }
 
-  lastLocation = locationQuery;
-
-  cardElement.className = 'card loading'; // Set loading state
-  weatherDataDisplay.setAttribute('aria-busy', 'true');
-  errorDisplay.textContent = '';
-
   try {
-    // Artificial delay to show skeleton loader
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const data = await fetchWeatherData(locationQuery, apiKey);
+    const data = await fetchWeatherData(city, apiKey);
     updateWeatherUI(data);
-    if (!locationQuery.includes(',')) {
-      saveSearch(locationQuery);
-    }
   } catch (error) {
-    handleFetchError(error);
+    console.error('Error fetching weather data:', error);
+    alert(error.message);
   }
 }
 
-// Toggles the unit and re-fetches weather data if a city is displayed
-function toggleUnit() {
-  currentUnit = currentUnit === 'us' ? 'metric' : 'us';
-  unitToggleButton.textContent = currentUnit === 'us' ? '°F' : '°C';
-  localStorage.setItem(UNIT_PREFERENCE_KEY, currentUnit); // Save the preference
-  if (cardElement.classList.contains('weather-visible')) {
-    getWeather(lastLocation);
-  }
-}
-
-// Sets the initial state of the unit toggle button
-function initializeUnit() {
-    unitToggleButton.textContent = currentUnit === 'us' ? '°F' : '°C';
-}
-
-// Gets weather for the user's current location
-function getWeatherForCurrentLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        getWeather(`${latitude},${longitude}`);
-      },
-      (error) => {
-        let message = 'Failed to get location.';
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            message = 'Geolocation permission denied.';
-            break;
-          case error.POSITION_UNAVAILABLE:
-            message = 'Location information is unavailable.';
-            break;
-          case error.TIMEOUT:
-            message = 'Location request timed out.';
-            break;
-        }
-        errorDisplay.textContent = message;
-      }
-    );
-  } else {
-    errorDisplay.textContent = 'Geolocation is not supported by this browser.';
-  }
-}
-
-// Clears the UI and resets the state
-function clearUI() {
-    cityInput.value = '';
-    errorDisplay.textContent = '';
-    lastLocation = '';
-    cardElement.className = 'card'; // Reset to initial state
-}
-
-// Event listeners
+// Event listener for search form submission
 searchForm.addEventListener('submit', (event) => {
   event.preventDefault();
-  getWeather();
+  const city = searchInput.value.trim();
+  getWeather(city);
 });
-geolocationButton.addEventListener('click', getWeatherForCurrentLocation);
-unitToggleButton.addEventListener('click', toggleUnit);
-clearButton.addEventListener('click', clearUI);
 
-// Initial Load
-loadSearchHistory();
-initializeUnit();
+// Load default weather on page load
+getWeather('San Francisco');
