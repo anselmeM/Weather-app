@@ -151,6 +151,41 @@ body {
     margin-top: -5px;
 }
 
+.hourly-forecast-container {
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px;
+    width: 100%;
+    overflow-x: auto;
+    padding: 10px 0;
+    margin-top: 20px;
+}
+
+.hourly-item {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 15px 10px;
+    text-align: center;
+    flex: 0 0 80px;
+}
+
+.hourly-item .wi {
+    font-size: 30px;
+    margin: 10px 0;
+}
+
+.skeleton-hourly {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 30px;
+    gap: 15px;
+}
+
+.skeleton-hourly .skeleton-box {
+    height: 120px;
+}
+
 #condition {
     margin-top: 15px;
 }

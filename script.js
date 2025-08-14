@@ -21,6 +21,7 @@ const windSpeed = document.getElementById('windSpeed');
 const weatherIcon = document.getElementById('weatherIcon');
 const unitToggleButton = document.getElementById('unitToggle');
 const forecastContainer = document.getElementById('forecastContainer');
+const hourlyForecastContainer = document.getElementById('hourlyForecastContainer');
 const searchHistoryDatalist = document.getElementById('searchHistory');
 
 // --- Search History ---
@@ -123,6 +124,41 @@ function updateForecastUI(days) {
   });
 }
 
+// Updates the UI with hourly forecast data
+function updateHourlyForecastUI(hours) {
+    hourlyForecastContainer.innerHTML = '';
+    const now = new Date();
+    const currentHour = now.getHours();
+
+    // Find the starting hour and get the next 8 hours
+    const upcomingHours = hours.filter(hour => {
+        const hourTime = parseInt(hour.datetime.split(':')[0], 10);
+        return hourTime >= currentHour;
+    }).slice(0, 8);
+
+    upcomingHours.forEach(hour => {
+        const hourDiv = document.createElement('div');
+        hourDiv.className = 'hourly-item';
+
+        const time = document.createElement('p');
+        const hourTime = parseInt(hour.datetime.split(':')[0], 10);
+        time.textContent = new Date(0, 0, 0, hourTime).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+
+        const icon = document.createElement('i');
+        icon.className = getIconClass(hour.icon);
+        icon.setAttribute('aria-hidden', 'true');
+
+        const temp = document.createElement('p');
+        const tempUnit = currentUnit === 'us' ? '°F' : '°C';
+        temp.textContent = `${hour.temp}${tempUnit}`;
+
+        hourDiv.appendChild(time);
+        hourDiv.appendChild(icon);
+        hourDiv.appendChild(temp);
+        hourlyForecastContainer.appendChild(hourDiv);
+    });
+}
+
 // Updates the UI with weather data
 function updateWeatherUI(data) {
   cityName.textContent = data.resolvedAddress;
@@ -136,6 +172,7 @@ function updateWeatherUI(data) {
   weatherIcon.className = `weather-icon ${getIconClass(data.currentConditions.icon)}`;
   weatherIcon.setAttribute('aria-label', data.currentConditions.conditions);
 
+  updateHourlyForecastUI(data.days[0].hours);
   updateForecastUI(data.days);
   cardElement.classList.remove('loading');
   cardElement.classList.add('weather-visible');
