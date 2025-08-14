@@ -6,6 +6,7 @@ let currentUnit = 'us'; // 'us' for Fahrenheit, 'metric' for Celsius
 const cityInput = document.getElementById('cityInput');
 const getWeatherButton = document.getElementById('getWeather');
 const geolocationButton = document.getElementById('geolocationButton');
+const searchForm = document.getElementById('searchForm');
 const loadingIndicator = document.getElementById('loading');
 const weatherDataDisplay = document.getElementById('weatherData');
 const errorDisplay = document.getElementById('error');
@@ -120,6 +121,7 @@ function updateWeatherUI(data) {
   updateForecastUI(data.days);
   loadingIndicator.style.display = 'none';
   weatherDataDisplay.style.display = 'block';
+  weatherDataDisplay.setAttribute('aria-busy', 'false');
 }
 
 // Handles errors during the fetch process
@@ -138,6 +140,7 @@ function handleFetchError(error) {
   errorDisplay.textContent = message;
   loadingIndicator.style.display = 'none';
   weatherDataDisplay.style.display = 'none';
+  weatherDataDisplay.setAttribute('aria-busy', 'false');
 }
 
 let lastLocation = '';
@@ -154,6 +157,7 @@ async function getWeather(location = null) {
 
   loadingIndicator.style.display = 'block';
   weatherDataDisplay.style.display = 'none';
+  weatherDataDisplay.setAttribute('aria-busy', 'true');
   errorDisplay.textContent = '';
 
   try {
@@ -206,13 +210,11 @@ function getWeatherForCurrentLocation() {
 }
 
 // Event listeners
-getWeatherButton.addEventListener('click', () => getWeather());
-geolocationButton.addEventListener('click', getWeatherForCurrentLocation);
-cityInput.addEventListener('keyup', (event) => {
-  if (event.key === 'Enter') {
-    getWeather();
-  }
+searchForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  getWeather();
 });
+geolocationButton.addEventListener('click', getWeatherForCurrentLocation);
 unitToggleButton.addEventListener('click', toggleUnit);
 
 // Initial Load

@@ -7,21 +7,24 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="title">
+    <header class="title">
         <h1>Weather App</h1>
-    </div>
-    <div class="card">
-        <div class="search">
-            <input type="text" id="cityInput" placeholder="Enter city name" list="searchHistory">
-            <button id="getWeather" title="Get Weather"><img src="img/5094671_find_glass_search_zoom_icon.png" alt="Search"></button>
-            <button id="geolocationButton" title="Use my location">📍</button>
-        </div>
+    </header>
+    <main class="card">
+        <form id="searchForm" class="search" role="search">
+            <label for="cityInput" class="visually-hidden">City Name</label>
+            <input type="text" id="cityInput" placeholder="Enter city name" list="searchHistory" aria-label="City Name">
+            <button type="submit" id="getWeather" title="Get Weather" aria-label="Search for weather by city name">
+                <img src="img/5094671_find_glass_search_zoom_icon.png" alt="Search">
+            </button>
+            <button id="geolocationButton" title="Use my location" aria-label="Get weather for my current location">📍</button>
+        </form>
         <datalist id="searchHistory"></datalist>
         <div class="unit-toggle">
-            <button id="unitToggle">°F</button>
+            <button id="unitToggle" aria-label="Toggle temperature unit between Fahrenheit and Celsius">°F</button>
         </div>
         <img src="img/weather-app.png" class="weather-icon" id="weatherIcon" alt="Weather Icon">
-        <div id="weatherData" style="display: none;">
+        <div id="weatherData" style="display: none;" aria-live="polite">
             <div class="weather">
                 <h1 class="temp" id="temperature"></h1>
                 <h2 class="city" id="cityName"></h2>
@@ -44,10 +47,10 @@
             </div>
             <p id="condition"></p>
         </div>
-        <div id="forecastContainer" class="forecast-container"></div>
-        <p id="error"></p>
-        <div id="loading">Loading...</div>
-    </div>
+        <div id="forecastContainer" class="forecast-container" aria-live="polite"></div>
+        <p id="error" aria-live="assertive"></p>
+        <div id="loading" aria-live="polite">Loading...</div>
+    </main>
     <script src="script.js"></script>
 </body>
 </html>
