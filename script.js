@@ -1,6 +1,7 @@
 // API key for accessing the Visual Crossing Weather API
 const apiKey = 'MSZFX378W9LM39D466F5WW32R';
-let currentUnit = 'us'; // 'us' for Fahrenheit, 'metric' for Celsius
+const UNIT_PREFERENCE_KEY = 'weatherAppUnitPreference';
+let currentUnit = localStorage.getItem(UNIT_PREFERENCE_KEY) || 'us'; // Load preference or default to 'us'
 
 // DOM element references
 const cityInput = document.getElementById('cityInput');
@@ -192,9 +193,15 @@ async function getWeather(location = null) {
 function toggleUnit() {
   currentUnit = currentUnit === 'us' ? 'metric' : 'us';
   unitToggleButton.textContent = currentUnit === 'us' ? '°F' : '°C';
-  if (weatherDataDisplay.style.display === 'block') {
+  localStorage.setItem(UNIT_PREFERENCE_KEY, currentUnit); // Save the preference
+  if (cardElement.classList.contains('weather-visible')) {
     getWeather(lastLocation);
   }
+}
+
+// Sets the initial state of the unit toggle button
+function initializeUnit() {
+    unitToggleButton.textContent = currentUnit === 'us' ? '°F' : '°C';
 }
 
 // Gets weather for the user's current location
@@ -245,3 +252,4 @@ clearButton.addEventListener('click', clearUI);
 
 // Initial Load
 loadSearchHistory();
+initializeUnit();
