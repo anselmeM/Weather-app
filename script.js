@@ -52,6 +52,31 @@ function saveSearch(city) {
 }
 // --- End Search History ---
 
+// --- Icon Mapping ---
+const iconMap = {
+    'snow': 'wi-snow',
+    'snow-showers-day': 'wi-day-snow',
+    'snow-showers-night': 'wi-night-snow',
+    'thunder-rain': 'wi-thunderstorm',
+    'thunder-showers-day': 'wi-day-thunderstorm',
+    'thunder-showers-night': 'wi-night-thunderstorm',
+    'rain': 'wi-rain',
+    'showers-day': 'wi-day-showers',
+    'showers-night': 'wi-night-showers',
+    'fog': 'wi-fog',
+    'wind': 'wi-strong-wind',
+    'cloudy': 'wi-cloudy',
+    'partly-cloudy-day': 'wi-day-cloudy',
+    'partly-cloudy-night': 'wi-night-alt-cloudy',
+    'clear-day': 'wi-day-sunny',
+    'clear-night': 'wi-night-clear',
+};
+
+function getIconClass(iconName) {
+    return `wi ${iconMap[iconName] || 'wi-na'}`; // Return 'wi-na' (not available) as a fallback
+}
+// --- End Icon Mapping ---
+
 // Fetches weather data from the API
 async function fetchWeatherData(city, apiKey) {
   const baseUrl = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/';
@@ -75,14 +100,9 @@ function updateForecastUI(days) {
     const date = new Date(day.datetime);
     const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
 
-    const icon = document.createElement('img');
-    const weatherCondition = day.icon.toLowerCase();
-    if (weatherCondition.includes('rain')) {
-      icon.src = 'img/—Pngtree—cartoon rain icon download_4441280.png';
-    } else {
-      icon.src = 'img/weather-app.png';
-    }
-    icon.alt = day.conditions;
+    const icon = document.createElement('i');
+    icon.className = getIconClass(day.icon);
+    icon.setAttribute('aria-hidden', 'true');
 
     const tempMax = document.createElement('p');
     const tempMin = document.createElement('p');
@@ -112,13 +132,8 @@ function updateWeatherUI(data) {
   humidity.textContent = `${data.currentConditions.humidity}%`;
   windSpeed.textContent = `${data.currentConditions.windspeed} ${speedUnit}`;
 
-  const weatherCondition = data.currentConditions.icon.toLowerCase();
-  if (weatherCondition.includes('rain')) {
-    weatherIcon.src = 'img/—Pngtree—cartoon rain icon download_4441280.png';
-  } else {
-    weatherIcon.src = 'img/weather-app.png';
-  }
-  weatherIcon.alt = data.currentConditions.conditions;
+  weatherIcon.className = `weather-icon ${getIconClass(data.currentConditions.icon)}`;
+  weatherIcon.setAttribute('aria-label', data.currentConditions.conditions);
 
   updateForecastUI(data.days);
   loadingIndicator.style.display = 'none';

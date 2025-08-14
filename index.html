@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather App</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/css/weather-icons.min.css">
 </head>
 <body>
     <header class="title">
@@ -24,7 +25,7 @@
         <div class="unit-toggle">
             <button id="unitToggle" aria-label="Toggle temperature unit between Fahrenheit and Celsius">°F</button>
         </div>
-        <img src="img/weather-app.png" class="weather-icon" id="weatherIcon" alt="Weather Icon">
+        <i class="weather-icon" id="weatherIcon" aria-hidden="true"></i>
         <div id="weatherData" aria-live="polite">
             <div class="weather">
                 <h1 class="temp" id="temperature"></h1>
