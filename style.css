@@ -148,6 +148,38 @@ body {
     margin-top: 15px;
 }
 
+.forecast-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 20px;
+    overflow-x: auto; /* Allows horizontal scrolling on small screens */
+}
+
+.forecast-day {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    flex: 0 0 100px; /* Flex-basis of 100px, don't grow or shrink */
+    margin-right: 10px;
+}
+
+.forecast-day:last-child {
+    margin-right: 0;
+}
+
+.forecast-day img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 5px;
+}
+
+.forecast-day p {
+    font-size: 14px;
+    margin: 2px 0;
+}
+
 /* Media Queries for Tablet and Mobile Responsiveness */
 
 /* Tablet (768px and below) */

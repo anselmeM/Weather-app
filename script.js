@@ -15,6 +15,7 @@ const humidity = document.getElementById('humidity');
 const windSpeed = document.getElementById('windSpeed');
 const weatherIcon = document.getElementById('weatherIcon');
 const unitToggleButton = document.getElementById('unitToggle');
+const forecastContainer = document.getElementById('forecastContainer');
 
 // Fetches weather data from the API
 async function fetchWeatherData(city, apiKey) {
@@ -25,6 +26,46 @@ async function fetchWeatherData(city, apiKey) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
   return await response.json();
+}
+
+// Updates the UI with forecast data
+function updateForecastUI(days) {
+  forecastContainer.innerHTML = ''; // Clear previous forecast
+  // Slice to get the next 5 days, skipping today
+  const forecastDays = days.slice(1, 6);
+
+  forecastDays.forEach(day => {
+    const dayDiv = document.createElement('div');
+    dayDiv.className = 'forecast-day';
+
+    const date = new Date(day.datetime);
+    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
+
+    const icon = document.createElement('img');
+    const weatherCondition = day.icon.toLowerCase();
+    if (weatherCondition.includes('rain')) {
+      icon.src = 'img/—Pngtree—cartoon rain icon download_4441280.png';
+    } else {
+      icon.src = 'img/weather-app.png';
+    }
+    icon.alt = day.conditions;
+
+    const tempMax = document.createElement('p');
+    const tempMin = document.createElement('p');
+    const tempUnit = currentUnit === 'us' ? '°F' : '°C';
+    tempMax.textContent = `Max: ${day.tempmax}${tempUnit}`;
+    tempMin.textContent = `Min: ${day.tempmin}${tempUnit}`;
+
+    const dayLabel = document.createElement('p');
+    dayLabel.textContent = dayOfWeek;
+
+    dayDiv.appendChild(dayLabel);
+    dayDiv.appendChild(icon);
+    dayDiv.appendChild(tempMax);
+    dayDiv.appendChild(tempMin);
+
+    forecastContainer.appendChild(dayDiv);
+  });
 }
 
 // Updates the UI with weather data
@@ -44,6 +85,8 @@ function updateWeatherUI(data) {
     weatherIcon.src = 'img/weather-app.png';
   }
   weatherIcon.alt = data.currentConditions.conditions;
+
+  updateForecastUI(data.days); // Update the forecast display
 
   loadingIndicator.style.display = 'none';
   weatherDataDisplay.style.display = 'block';
