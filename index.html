@@ -50,8 +50,23 @@
             <p id="condition"></p>
         </div>
         <div id="forecastContainer" class="forecast-container" aria-live="polite"></div>
+        <div id="skeletonLoader">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text skeleton-text-small"></div>
+            <div class="skeleton-details">
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+            </div>
+            <div class="skeleton-forecast">
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+                <div class="skeleton-box"></div>
+            </div>
+        </div>
         <p id="error" aria-live="assertive"></p>
-        <div id="loading" aria-live="polite">Loading...</div>
     </main>
     <script src="script.js"></script>
 </body>

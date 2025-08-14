@@ -10,7 +10,7 @@ const geolocationButton = document.getElementById('geolocationButton');
 const searchForm = document.getElementById('searchForm');
 const clearButton = document.getElementById('clearButton');
 const cardElement = document.querySelector('.card');
-const loadingIndicator = document.getElementById('loading');
+const skeletonLoader = document.getElementById('skeletonLoader');
 const weatherDataDisplay = document.getElementById('weatherData');
 const errorDisplay = document.getElementById('error');
 const cityName = document.getElementById('cityName');
@@ -137,7 +137,7 @@ function updateWeatherUI(data) {
   weatherIcon.setAttribute('aria-label', data.currentConditions.conditions);
 
   updateForecastUI(data.days);
-  loadingIndicator.style.display = 'none';
+  cardElement.classList.remove('loading');
   cardElement.classList.add('weather-visible');
   weatherDataDisplay.setAttribute('aria-busy', 'false');
 }
@@ -156,8 +156,7 @@ function handleFetchError(error) {
     message = 'Server error while fetching weather data.';
   }
   errorDisplay.textContent = message;
-  loadingIndicator.style.display = 'none';
-  cardElement.classList.remove('weather-visible');
+  cardElement.classList.remove('loading');
   weatherDataDisplay.setAttribute('aria-busy', 'false');
 }
 
@@ -173,12 +172,13 @@ async function getWeather(location = null) {
 
   lastLocation = locationQuery;
 
-  loadingIndicator.style.display = 'block';
-  cardElement.classList.remove('weather-visible');
+  cardElement.className = 'card loading'; // Set loading state
   weatherDataDisplay.setAttribute('aria-busy', 'true');
   errorDisplay.textContent = '';
 
   try {
+    // Artificial delay to show skeleton loader
+    await new Promise(resolve => setTimeout(resolve, 1000));
     const data = await fetchWeatherData(locationQuery, apiKey);
     updateWeatherUI(data);
     if (!locationQuery.includes(',')) {
@@ -238,7 +238,7 @@ function clearUI() {
     cityInput.value = '';
     errorDisplay.textContent = '';
     lastLocation = '';
-    cardElement.classList.remove('weather-visible');
+    cardElement.className = 'card'; // Reset to initial state
 }
 
 // Event listeners

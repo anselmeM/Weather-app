@@ -85,23 +85,6 @@ body {
     margin-left: 10px;
 }
 
-#clearButton {
-    font-size: 20px;
-    padding: 0;
-    margin-left: 10px;
-    display: none; /* Hidden by default */
-}
-
-.weather-visible #clearButton {
-    display: inline-block; /* Show when weather is visible */
-}
-
-.unit-toggle {
-    width: 100%;
-    text-align: right;
-    margin-bottom: 10px;
-}
-
 #unitToggle {
     background: #ebfffc;
     color: #555;
@@ -118,6 +101,12 @@ body {
     margin-top: 30px;
     line-height: 1;
 }
+
+.forecast-day .wi {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
 
 .weather {
     margin-bottom: 20px; /* Added margin bottom */
@@ -166,20 +155,116 @@ body {
     margin-top: 15px;
 }
 
+/* --- UI Polish & Transitions --- */
+#clearButton {
+    font-size: 20px;
+    padding: 0;
+    margin-left: 10px;
+    display: none; /* Hidden by default */
+}
+
+.weather-visible #clearButton {
+    display: inline-block; /* Show when weather is visible */
+}
+
 #weatherData, #forecastContainer {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
     max-height: 0;
+    overflow: hidden;
 }
 
-.weather-visible #weatherData,
-.weather-visible #forecastContainer {
+.weather-visible #weatherData {
+    display: block;
     opacity: 1;
     visibility: visible;
-    max-height: 1000px; /* Arbitrary large value to allow content to expand */
+    max-height: 1000px;
 }
 
+.weather-visible #forecastContainer {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+    max-height: 1000px;
+}
+
+/* --- Skeleton Loader --- */
+#skeletonLoader {
+    width: 100%;
+    display: none; /* Hidden by default, shown via class on parent */
+    align-items: center;
+    flex-direction: column;
+}
+
+.loading #skeletonLoader {
+    display: flex; /* Show skeleton when loading */
+}
+
+.skeleton-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-top: 30px;
+}
+
+.skeleton-text {
+    height: 40px;
+    width: 60%;
+    margin-top: 25px;
+}
+
+.skeleton-text-small {
+    height: 30px;
+    width: 45%;
+    margin-top: 15px;
+}
+
+.skeleton-details, .skeleton-forecast {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 30px;
+    gap: 15px;
+}
+
+.skeleton-box {
+    height: 100px;
+    flex-grow: 1;
+}
+
+.skeleton-forecast .skeleton-box {
+    height: 150px;
+}
+
+.skeleton-icon, .skeleton-text, .skeleton-box {
+    background-color: rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+.skeleton-icon::after, .skeleton-text::after, .skeleton-box::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* --- Accessibility --- */
 .visually-hidden {
     position: absolute;
     width: 1px;
@@ -189,37 +274,6 @@ body {
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     border: 0;
-}
-
-.forecast-container {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 20px;
-    overflow-x: auto; /* Allows horizontal scrolling on small screens */
-}
-
-.forecast-day {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 15px;
-    padding: 15px;
-    text-align: center;
-    flex: 0 0 100px; /* Flex-basis of 100px, don't grow or shrink */
-    margin-right: 10px;
-}
-
-.forecast-day:last-child {
-    margin-right: 0;
-}
-
-.forecast-day .wi {
-    font-size: 40px;
-    margin-bottom: 10px;
-}
-
-.forecast-day p {
-    font-size: 14px;
-    margin: 2px 0;
 }
 
 /* Media Queries for Tablet and Mobile Responsiveness */
