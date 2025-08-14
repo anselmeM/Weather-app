@@ -12,10 +12,11 @@
     </div>
     <div class="card">
         <div class="search">
-            <input type="text" id="cityInput" placeholder="Enter city name">
+            <input type="text" id="cityInput" placeholder="Enter city name" list="searchHistory">
             <button id="getWeather" title="Get Weather"><img src="img/5094671_find_glass_search_zoom_icon.png" alt="Search"></button>
             <button id="geolocationButton" title="Use my location">📍</button>
         </div>
+        <datalist id="searchHistory"></datalist>
         <div class="unit-toggle">
             <button id="unitToggle">°F</button>
         </div>

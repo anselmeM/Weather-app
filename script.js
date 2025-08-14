@@ -17,6 +17,37 @@ const windSpeed = document.getElementById('windSpeed');
 const weatherIcon = document.getElementById('weatherIcon');
 const unitToggleButton = document.getElementById('unitToggle');
 const forecastContainer = document.getElementById('forecastContainer');
+const searchHistoryDatalist = document.getElementById('searchHistory');
+
+// --- Search History ---
+const SEARCH_HISTORY_KEY = 'weatherAppSearchHistory';
+const MAX_HISTORY_ITEMS = 5;
+
+function updateHistoryDatalist(history) {
+  searchHistoryDatalist.innerHTML = '';
+  history.forEach(city => {
+    const option = document.createElement('option');
+    option.value = city;
+    searchHistoryDatalist.appendChild(option);
+  });
+}
+
+function loadSearchHistory() {
+  const history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || [];
+  updateHistoryDatalist(history);
+}
+
+function saveSearch(city) {
+  let history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || [];
+  history = history.filter(item => item.toLowerCase() !== city.toLowerCase());
+  history.unshift(city);
+  if (history.length > MAX_HISTORY_ITEMS) {
+    history = history.slice(0, MAX_HISTORY_ITEMS);
+  }
+  localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+  updateHistoryDatalist(history);
+}
+// --- End Search History ---
 
 // Fetches weather data from the API
 async function fetchWeatherData(city, apiKey) {
@@ -32,7 +63,6 @@ async function fetchWeatherData(city, apiKey) {
 // Updates the UI with forecast data
 function updateForecastUI(days) {
   forecastContainer.innerHTML = ''; // Clear previous forecast
-  // Slice to get the next 5 days, skipping today
   const forecastDays = days.slice(1, 6);
 
   forecastDays.forEach(day => {
@@ -87,8 +117,7 @@ function updateWeatherUI(data) {
   }
   weatherIcon.alt = data.currentConditions.conditions;
 
-  updateForecastUI(data.days); // Update the forecast display
-
+  updateForecastUI(data.days);
   loadingIndicator.style.display = 'none';
   weatherDataDisplay.style.display = 'block';
 }
@@ -111,7 +140,7 @@ function handleFetchError(error) {
   weatherDataDisplay.style.display = 'none';
 }
 
-let lastLocation = ''; // To store the last searched location
+let lastLocation = '';
 
 // Main function to get weather
 async function getWeather(location = null) {
@@ -121,7 +150,7 @@ async function getWeather(location = null) {
     return;
   }
 
-  lastLocation = locationQuery; // Save the location for unit toggling
+  lastLocation = locationQuery;
 
   loadingIndicator.style.display = 'block';
   weatherDataDisplay.style.display = 'none';
@@ -130,6 +159,9 @@ async function getWeather(location = null) {
   try {
     const data = await fetchWeatherData(locationQuery, apiKey);
     updateWeatherUI(data);
+    if (!locationQuery.includes(',')) {
+      saveSearch(locationQuery);
+    }
   } catch (error) {
     handleFetchError(error);
   }
@@ -139,7 +171,6 @@ async function getWeather(location = null) {
 function toggleUnit() {
   currentUnit = currentUnit === 'us' ? 'metric' : 'us';
   unitToggleButton.textContent = currentUnit === 'us' ? '°F' : '°C';
-  // If a city's weather is already displayed, fetch it again with the new unit
   if (weatherDataDisplay.style.display === 'block') {
     getWeather(lastLocation);
   }
@@ -183,3 +214,6 @@ cityInput.addEventListener('keyup', (event) => {
   }
 });
 unitToggleButton.addEventListener('click', toggleUnit);
+
+// Initial Load
+loadSearchHistory();
